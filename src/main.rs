@@ -1,13 +1,89 @@
 use std::{collections::HashMap, fs};
-
+use clap::{Parser, Subcommand};
 use rand::seq::IndexedRandom;
 
+/// A CLI program to quickly generate text using Markov chains, based on some input text.
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Cli {
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Generate a Markov chain model from the input text.
+    Generate {
+        /// The input text file to read from.
+        #[arg(short, long)]
+        input: String,
+
+        /// The output file to write the generated model to.
+        output: String,
+        
+        /// The size of the state to use for the Markov chain.
+        #[arg(default_value_t = 2)]
+        state_size: usize,
+    },
+    /// Generate text based on the Markov chain model.
+    Model {
+        /// The input file containing the Markov chain model.
+        input: String,
+
+        /// The number of words to generate.
+        #[arg(default_value_t = 100)]
+        max_words: usize,
+
+        /// The size of the state to use for text generation.
+        #[arg(default_value_t = 2)]
+        state_size: usize,
+    },
+    /// Gnerate text from input text.
+    Text {
+        /// The input text file to read from.
+        input: String,
+        /// The number of words to generate.
+        #[arg(default_value_t = 100)]
+        max_words: usize,
+        /// The size of the state to use for text generation.
+        #[arg(default_value_t = 2)]
+        state_size: usize,
+    }
+}
+
 fn main() {
-    let input = fs::read_to_string("sherlock.txt").unwrap();
-    let model = generate_markov_chain(&input, 2);
-    println!("Markov model generated with {} states.", model.len());
-    let generated_text = generate_text(&model, 2, 300);
-    println!("Here is the generated text:\n\n{}", generated_text);
+    let cli = Cli::parse();
+
+    match &cli.command {
+        Commands::Generate { input, output, state_size } => {
+            let input_text = fs::read_to_string(input).unwrap();
+            let model = generate_markov_chain(&input_text, *state_size);
+            println!("Markov model generated with {} states.", model.len());
+            let output_model = serde_json::to_string(&model).unwrap();
+            fs::write(output, output_model).expect("Unable to write model to file");
+            println!("Model written to {}", output);
+        },
+        Commands::Model { input, max_words, state_size } => {
+            let model_data = fs::read_to_string(input).unwrap();
+            let model: HashMap<String, Vec<String>> = serde_json::from_str(&model_data).unwrap();
+            println!("Markov model loaded with {} states.", model.len());
+            let generated_text = generate_text(&model, *state_size, *max_words);
+            println!("Here is the generated text:\n\n{}", generated_text);
+        },
+        Commands::Text { input, max_words, state_size } => {
+            let input_text = fs::read_to_string(input).unwrap();
+            let model = generate_markov_chain(&input_text, *state_size);
+            println!("Markov model generated with {} states.", model.len());
+            let generated_text = generate_text(&model, *state_size, *max_words);
+            println!("Here is the generated text:\n\n{}", generated_text);
+        },
+    }
+
+    // let input = fs::read_to_string("sherlock.txt").unwrap();
+    // let model = generate_markov_chain(&input, 2);
+    // println!("Markov model generated with {} states.", model.len());
+    // let generated_text = generate_text(&model, 2, 300);
+    // println!("Here is the generated text:\n\n{}", generated_text);
 }
 
 fn generate_markov_chain(input: &str, state_size: usize) -> HashMap<String, Vec<String>> {
@@ -97,10 +173,6 @@ fn get_text_starter(model: &HashMap<String, Vec<String>>, state_size: usize) -> 
             }
         }
     }
-    // Write starters to json file
-    let starters_json = serde_json::to_string(&starters_valid).unwrap();
-    fs::write("starters.json", starters_json).unwrap();
-    println!("Starters written to 'starters.json'.");
     // Randomly pick 1 to be the starter
     let mut random_num = rand::rng();
     let starter = starters_valid.choose(&mut random_num).unwrap().to_string();
