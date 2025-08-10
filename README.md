@@ -7,7 +7,7 @@ A CLI implementation of text generation using markov chains in Rust.
 To run the program, use the following command:
 
 ```bash
-./markov-text text <input_text_file> <state_size> <max_words>
+./markov-text text <input_text_file> <max_words> <state_size>
 ```
 Where:
 - `<input_text_file>` is the path to the text file you want to use as input. An example file is `examples/sherlock.txt`, provided in the repository.
@@ -17,7 +17,7 @@ Where:
 ## Generation from a markov model file
 To generate text from a pre-existing Markov model, use the following command:
 ```bash
-./markov-text model <model_file> <state_size>
+./markov-text model <model_file> <max_words> <state_size>
 ```
 Where:
 - `<model_file>` is the path to the Markov model file (in JSON format). An example file is `examples/sherlock.json`, provided in the repository.
