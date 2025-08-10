@@ -3,14 +3,9 @@ use std::{collections::HashMap, fs};
 use rand::seq::IndexedRandom;
 
 fn main() {
-    let input = fs::read_to_string("input.txt").unwrap();
-    println!("Input text loaded:\n{}", input);
+    let input = fs::read_to_string("sherlock.txt").unwrap();
     let model = generate_markov_chain(&input, 2);
     println!("Markov model generated with {} states.", model.len());
-    // Write model to file
-    let model_json = serde_json::to_string(&model).unwrap();
-    fs::write("model.json", model_json).unwrap();
-    println!("Markov model written to 'model.json'.");
     let generated_text = generate_text(&model, 2, 300);
     println!("Here is the generated text:\n\n{}", generated_text);
 }
@@ -86,9 +81,8 @@ fn get_text_starter(model: &HashMap<String, Vec<String>>, state_size: usize) -> 
     for (key, value) in model.iter() {
         let capital_letters: [&str; 26] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
         for i in capital_letters.iter() {
-            if key[0..state_size].contains(*i) {
+            if key[0..1].contains(*i) {
                 starters_all.push(key.to_string());
-                println!("Starter candidate found: '{}'", key);
                 break;
             }
         }
@@ -98,13 +92,15 @@ fn get_text_starter(model: &HashMap<String, Vec<String>>, state_size: usize) -> 
             for i in capital_letters.iter() {
                 if !starter.split(" ").collect::<Vec<&str>>().get(state_size-1).unwrap().contains(*i) {
                     starters_valid.push(starter.to_string());
-                    println!("Valid starter: '{}'", starter);
                     break;
                 }
             }
         }
     }
-    println!("Valid Starters:\n{:#?}", starters_valid);
+    // Write starters to json file
+    let starters_json = serde_json::to_string(&starters_valid).unwrap();
+    fs::write("starters.json", starters_json).unwrap();
+    println!("Starters written to 'starters.json'.");
     // Randomly pick 1 to be the starter
     let mut random_num = rand::rng();
     let starter = starters_valid.choose(&mut random_num).unwrap().to_string();
