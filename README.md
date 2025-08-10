@@ -2,6 +2,10 @@
 
 A CLI implementation of text generation using markov chains in Rust.
 
+# Demo
+
+<video src="https://hc-cdn.hel1.your-objectstorage.com/s/v3/f3658a867a57f23ca7cd042368f1bca63e32c6c3_screencast_20250810_155055.mp4" width="320" height="240" controls></video>
+
 # Usage
 ## Generation from a Text File
 To run the program, use the following command:
