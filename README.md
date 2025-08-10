@@ -4,7 +4,7 @@ A CLI implementation of text generation using markov chains in Rust.
 
 # Demo
 
-<video src="https://hc-cdn.hel1.your-objectstorage.com/s/v3/f3658a867a57f23ca7cd042368f1bca63e32c6c3_screencast_20250810_155055.mp4" width="320" height="240" controls></video>
+https://github.com/user-attachments/assets/b01be891-c839-4c47-80ed-b67b281e3815
 
 # Usage
 ## Generation from a Text File
