@@ -255,7 +255,7 @@ fn get_text_starter(model: &HashMap<String, Vec<String>>, state_size: usize) -> 
     // Randomly pick 1 to be the starter
     let mut random_num = rand::rng();
     let starter = starters_valid.choose(&mut random_num)
-        .ok_or("Failed to choose a starter")?;
+        .ok_or("Failed to choose a starter, please ensure that one state starts with a capital letter to generate valid sentences.")?;
     
     println!("Starter selected: '{}'", starter);
     Ok(starter.clone())
