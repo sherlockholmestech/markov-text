@@ -154,7 +154,7 @@ fn get_text_starter(model: &HashMap<String, Vec<String>>, state_size: usize) -> 
     let mut starters_valid: Vec<String> = Vec::new();
 
     // Checks for capital letters in the start of the state
-    for (key, value) in model.iter() {
+    for (key, _value) in model.iter() {
         let capital_letters: [&str; 26] = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
         for i in capital_letters.iter() {
             if key[0..1].contains(*i) {
@@ -164,7 +164,7 @@ fn get_text_starter(model: &HashMap<String, Vec<String>>, state_size: usize) -> 
         }
 
         // Check 2nd letter is not capital, to prevent proper nouns
-        for (e, starter) in starters_all.iter().enumerate() {
+        for (_e, starter) in starters_all.iter().enumerate() {
             for i in capital_letters.iter() {
                 if !starter.split(" ").collect::<Vec<&str>>().get(state_size-1).unwrap().contains(*i) {
                     starters_valid.push(starter.to_string());
